@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rota do Sucesso – Mapeamento CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #2a3345;
+    --accent: #f0c040;
+    --accent2: #e07b3c;
+    --text: #e8edf5;
+    --muted: #7a8699;
+    --success: #3dd68c;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% -10%, rgba(240,192,64,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at -10% 80%, rgba(224,123,60,0.07) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0d1117;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .logo-mark svg { width: 14px; height: 14px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Progress */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+
+  .progress-dot {
+    width: 28px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.4s;
+  }
+  .progress-dot.active { background: var(--accent); }
+  .progress-dot.done { background: var(--success); }
+
+  /* Step */
+  .step {
+    display: none;
+    animation: fadeUp 0.4s ease both;
+  }
+  .step.visible { display: block; }
+
+  /* Section label */
+  .step-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+
+  /* Form elements */
+  .field { margin-bottom: 24px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #b4bfce;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  label span.req { color: var(--accent2); margin-left: 3px; }
+
+  input[type="text"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(240,192,64,0.12);
+  }
+
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+  select option { background: var(--surface2); }
+
+  /* Checkbox grid */
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 520px) { .check-grid { grid-template-columns: 1fr; } }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .check-item:hover { border-color: rgba(240,192,64,0.4); }
+  .check-item.selected {
+    border-color: var(--accent);
+    background: rgba(240,192,64,0.06);
+  }
+
+  .check-item input[type="checkbox"] { display: none; }
+
+  .check-box {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    margin-top: 1px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-item.selected .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check-box::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: 2px solid #0d1117;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translateY(-1px);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .check-item.selected .check-box::after { opacity: 1; }
+
+  .check-text strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .check-text small {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Priority stars */
+  .stars {
+    display: flex;
+    gap: 6px;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+  .stars input { display: none; }
+  .stars label {
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--border);
+    transition: color 0.15s;
+    margin: 0;
+  }
+  .stars input:checked ~ label,
+  .stars label:hover,
+  .stars label:hover ~ label { color: var(--accent); }
+
+  /* Range */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--val, 50%), var(--border) var(--val, 50%));
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .range-val {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0d1117;
+  }
+  .btn-primary:hover { background: #f5d060; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: #4a5568; }
+
+  .btn svg { width: 16px; height: 16px; }
+
+  /* Success screen */
+  .success-screen {
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+
+  .success-screen h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 400px; margin: 0 auto; }
+
+  /* Animations */
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z"/></svg>
+      Rota do Sucesso
+    </div>
+    <h1>Mapeamento<br>de Necessidades CRM</h1>
+    <p class="subtitle">Sua visão é o que guia a evolução do nosso CRM. Preencha com honestidade — cada resposta conta.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-dot active" data-step="0"></div>
+    <div class="progress-dot" data-step="1"></div>
+    <div class="progress-dot" data-step="2"></div>
+    <div class="progress-dot" data-step="3"></div>
+    <div class="progress-dot" data-step="4"></div>
+  </div>
+
+  <!-- STEP 0: Identificação -->
+  <div class="step visible" id="step0">
+    <div class="step-label">Etapa 1 de 5</div>
+    <div class="step-title">Quem é você?</div>
+    <div class="step-desc">Vamos começar com sua identificação para contextualizarmos melhor o feedback.</div>
+
+    <div class="card">
+      <div class="field">
+        <label>Nome completo <span class="req">*</span></label>
+        <input type="text" id="nome" placeholder="Ex: Ana Souza">
+      </div>
+      <div class="field">
+        <label>E-mail corporativo <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="ana.souza@empresa.com">
+      </div>
+      <div class="field">
+        <label>Área / Equipe <span class="req">*</span></label>
+        <input type="text" id="area" placeholder="Ex: Comercial, Customer Success, Operações…">
+      </div>
+      <div class="field">
+        <label>Qual é seu papel? <span class="req">*</span></label>
+        <select id="papel">
+          <option value="">Selecione…</option>
+          <option>Analista</option>
+          <option>Gestor / Líder</option>
+          <option>Coordenador</option>
+          <option>Diretor</option>
+          <option>Outro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav">
+      <span></span>
+      <button class="btn btn-primary" onclick="goTo(1)">
+        Próximo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 1: Visibilidade -->
+  <div class="step" id="step1">
+    <div class="step-label">Etapa 2 de 5</div>
+    <div class="step-title">O que você precisa ver?</div>
+    <div class="step-desc">Selecione as informações que você considera essenciais ter em destaque no CRM.</div>
+
+    <div class="card">
+      <div class="check-grid" id="infoGrid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="historico_cliente">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Histórico do cliente</strong><small>Todas as interações, compras e tickets em ordem cronológica</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="status_contrato">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Status do contrato</strong><small>Validade, renovação, plano ativo e pendências</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="nps_csat">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>NPS / CSAT</strong><small>Última avaliação de satisfação do cliente</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="tarefas_followup">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Tarefas e follow-ups</strong><small>Atividades pendentes com datas e responsáveis</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="pipeline_oportunidade">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Pipeline / Oportunidades</strong><small>Negociações abertas, etapas e valor estimado</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="alertas_risco">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Alertas de risco</strong><small>Sinais de churn ou inadimplência</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="uso_produto">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Uso do produto</strong><small>Frequência de acesso, features utilizadas</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="contatos_principais">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Contatos principais</strong><small>Decisores, stakeholders e dados de acesso rápido</small></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="field">
+        <label>Tem algo que não está na lista acima?</label>
+        <textarea id="outrasInfos" placeholder="Descreva outras informações que você gostaria de ter no CRM…"></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="goTo(2)">
+        Próximo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Dores -->
+  <div class="step" id="step2">
+    <div class="step-label">Etapa 3 de 5</div>
+    <div class="step-title">Maiores dificuldades hoje</div>
+    <div class="step-desc">O que te trava no dia a dia com o CRM atual?</div>
+
+    <div class="card">
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="informacao_espalhada">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Informação espalhada</strong><small>Dados em várias ferramentas, sem visão centralizada</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="atualizacao_manual">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Atualização manual</strong><small>Muito tempo gasto preenchendo campos manualmente</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="falta_contexto">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Falta de contexto</strong><small>Histórico incompleto antes de entrar em contato</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="relatorios_dificeis">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Relatórios difíceis</strong><small>Dificuldade de extrair dados e métricas rapidamente</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="sem_alertas">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Sem alertas proativos</strong><small>Percebo o problema quando já é tarde</small></div>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" value="interface_confusa">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Interface confusa</strong><small>Muitos cliques para chegar onde preciso</small></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="field">
+        <label>Descreva sua principal dor em palavras próprias</label>
+        <textarea id="dorPrincipal" placeholder="Ex: Quando um cliente me liga, preciso abrir 3 abas diferentes para ter o contexto completo…" style="min-height:110px"></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="goTo(3)">
+        Próximo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Prioridade -->
+  <div class="step" id="step3">
+    <div class="step-label">Etapa 4 de 5</div>
+    <div class="step-title">Prioridades e impacto</div>
+    <div class="step-desc">Nos ajude a entender o peso de cada necessidade.</div>
+
+    <div class="card">
+      <div class="field">
+        <label>Se você pudesse pedir <strong>uma única</strong> melhoria no CRM agora, qual seria?</label>
+        <textarea id="umaMelhoria" placeholder="Seja direto — essa resposta tem muito valor!" style="min-height:90px"></textarea>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="field">
+        <label>Quão urgente você classifica essa necessidade?</label>
+        <div class="stars">
+          <input type="radio" name="urgencia" id="u5" value="5"><label for="u5">★</label>
+          <input type="radio" name="urgencia" id="u4" value="4"><label for="u4">★</label>
+          <input type="radio" name="urgencia" id="u3" value="3"><label for="u3">★</label>
+          <input type="radio" name="urgencia" id="u2" value="2"><label for="u2">★</label>
+          <input type="radio" name="urgencia" id="u1" value="1"><label for="u1">★</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="field">
+        <label>Quantas vezes por semana você sente falta dessa informação no CRM?</label>
+        <input type="range" id="frequencia" min="1" max="20" value="5"
+          oninput="document.getElementById('freqVal').textContent=this.value+'×'; this.style.setProperty('--val', ((this.value-1)/19*100)+'%')">
+        <div class="range-val" id="freqVal">5×</div>
+        <div class="range-labels"><span>1× (raro)</span><span>20× (todo dia)</span></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="goTo(4)">
+        Próximo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Finalização -->
+  <div class="step" id="step4">
+    <div class="step-label">Etapa 5 de 5</div>
+    <div class="step-title">Visão e expectativas</div>
+    <div class="step-desc">Por último, queremos entender sua perspectiva de futuro.</div>
+
+    <div class="card">
+      <div class="field">
+        <label>Como seria o CRM ideal para o seu trabalho?</label>
+        <textarea id="crmIdeal" placeholder="Imagine que você acordou e o CRM estava perfeito. O que você veria diferente?" style="min-height:120px"></textarea>
+      </div>
+      <div class="field">
+        <label>Você tem alguma referência de ferramenta que admira? (ex: Salesforce, HubSpot, Notion…)</label>
+        <input type="text" id="referencias" placeholder="Nome da ferramenta e por que gosta">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="field">
+        <label>Você toparia participar de uma entrevista rápida (30 min) para aprofundar suas respostas?</label>
+        <select id="entrevista">
+          <option value="">Selecione…</option>
+          <option>Sim, pode me chamar!</option>
+          <option>Talvez, depende da agenda</option>
+          <option>Prefiro não, mas o formulário foi suficiente</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="submitForm()">
+        Enviar respostas
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="step" id="stepSuccess">
+    <div class="card">
+      <div class="success-screen">
+        <div class="success-icon">🎯</div>
+        <h2>Obrigado pela sua contribuição!</h2>
+        <p>Suas respostas foram registradas com sucesso. A equipe da <strong>Rota do Sucesso</strong> irá analisar todos os feedbacks e priorizará as melhorias com maior impacto para o time.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const total = 5;
+
+  function updateProgress(step) {
+    document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+      dot.classList.remove('active','done');
+      if (i < step) dot.classList.add('done');
+      else if (i === step) dot.classList.add('active');
+    });
+  }
+
+  function goTo(step) {
+    document.getElementById('step'+current).classList.remove('visible');
+    if (step >= total) {
+      document.getElementById('stepSuccess').classList.add('visible');
+      document.getElementById('progressBar').style.display = 'none';
+    } else {
+      document.getElementById('step'+step).classList.add('visible');
+      updateProgress(step);
+    }
+    current = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('selected');
+    el.querySelector('input[type="checkbox"]').checked = el.classList.contains('selected');
+  }
+
+  async function submitForm() {
+    // Collect all data
+    const infosSelecionadas = [...document.querySelectorAll('#infoGrid .check-item.selected input')]
+      .map(el => el.value).join(', ') || 'Nenhuma selecionada';
+
+    const doresSelecionadas = [...document.querySelectorAll('#step2 .check-item.selected input')]
+      .map(el => el.value).join(', ') || 'Nenhuma selecionada';
+
+    const urgencia = document.querySelector('input[name="urgencia"]:checked')?.value || 'Não informado';
+
+    const payload = {
+      nome:              document.getElementById('nome').value,
+      email:             document.getElementById('email').value,
+      area:              document.getElementById('area').value,
+      papel:             document.getElementById('papel').value,
+      informacoes_crm:   infosSelecionadas,
+      outras_infos:      document.getElementById('outrasInfos').value,
+      dores:             doresSelecionadas,
+      dor_principal:     document.getElementById('dorPrincipal').value,
+      uma_melhoria:      document.getElementById('umaMelhoria').value,
+      urgencia_estrelas: urgencia + ' estrelas',
+      frequencia_semanal: document.getElementById('frequencia').value + 'x por semana',
+      crm_ideal:         document.getElementById('crmIdeal').value,
+      referencias:       document.getElementById('referencias').value,
+      entrevista:        document.getElementById('entrevista').value,
+    };
+
+    // Show loading state
+    const btn = document.querySelector('#step4 .btn-primary');
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Enviando…';
+
+    try {
+      const res = await fetch('https://formspree.io/f/xkoqdezb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        goTo(99);
+      } else {
+        throw new Error('Erro no envio');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.innerHTML = 'Enviar respostas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+      alert('Ops! Houve um problema ao enviar. Verifique sua conexão e tente novamente.');
+    }
+  }
+
+  // Init range gradient
+  const range = document.getElementById('frequencia');
+  range.style.setProperty('--val', ((range.value-1)/19*100)+'%');
+</script>
+</body>
+</html>
